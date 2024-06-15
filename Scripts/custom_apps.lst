@@ -1,23 +1,24 @@
-# --------------------------------------------------- // System
-# downgrade                                            # downgrade packages
-# trash-cli-git                                        # cli to manage trash files
-# libinput-gestures                                    # actions touchpad gestures using libinput
-# gestures                                             # gui for libinput-gestures
+# --------------------------------------------------- // Development Packages
+git
+nodejs
+npm
 
-# --------------------------------------------------- // Dependencies
-xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
-# emote                                                # emoji picker gtk3
+# --------------------------------------------------- // Pacman Packages
+aria2
+xdg-user-dirs
+qbittorrent
+telegram-desktop
+gthumb
+proxychains-ng
+foot
+github-cli
+neovim
 
-# --------------------------------------------------- // Gaming
-steam                                                  # gaming platform
-gamemode                                               # daemon and library for game optimisations
-mangohud                                               # system performance overlay
-# gamescope                                            # micro-compositor for gaming
-
-# --------------------------------------------------- // Music
-cava                                                   # audio visualizer
-spotify                                                # proprietary music streaming service
-spicetify-cli                                          # cli to customize spotify client
-
-# --------------------------------------------------- // Apps
-# neovim                                               # vim based text editor
+# --------------------------------------------------- // AUR Packages
+spotube-bin
+flatpak
+nitch
+brave-nightly-bin
+ttf-maple
+ttf-twemoji
+signal-desktop
