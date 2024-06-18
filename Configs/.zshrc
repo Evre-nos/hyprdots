@@ -103,3 +103,4 @@ alias mkdir='mkdir -p'
 # Shell integrations
 eval "$(fzf --zsh)"
 export PATH="~/.local/bin:$PATH"
+export PATH="$PATH:/home/evrenos/.cargo/bin"
