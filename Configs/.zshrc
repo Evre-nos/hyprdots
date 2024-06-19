@@ -1,84 +1,63 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# Path to your oh-my-zsh installation.
+ZSH=/usr/share/oh-my-zsh/
+
+# Path to powerlevel10k theme
+source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+
+# List of plugins used
+plugins=()
+source $ZSH/oh-my-zsh.sh
+
+# In case a command is not found, try to find the package that has it
+function command_not_found_handler {
+    local purple='\e[1;35m' bright='\e[0;1m' green='\e[1;32m' reset='\e[0m'
+    printf 'zsh: command not found: %s\n' "$1"
+    local entries=( ${(f)"$(/usr/bin/pacman -F --machinereadable -- "/usr/bin/$1")"} )
+    if (( ${#entries[@]} )) ; then
+        printf "${bright}$1${reset} may be found in the following packages:\n"
+        local pkg
+        for entry in "${entries[@]}" ; do
+            local fields=( ${(0)entry} )
+            if [[ "$pkg" != "${fields[2]}" ]] ; then
+                printf "${purple}%s/${bright}%s ${green}%s${reset}\n" "${fields[1]}" "${fields[2]}" "${fields[3]}"
+            fi
+            printf '    /%s\n' "${fields[4]}"
+            pkg="${fields[2]}"
+        done
+    fi
+    return 127
+}
+
+# Detect the AUR wrapper
+if pacman -Qi yay &>/dev/null ; then
+   aurhelper="yay"
+elif pacman -Qi paru &>/dev/null ; then
+   aurhelper="paru"
 fi
 
-# Set the directory we want to store zinit and plugins
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+function in {
+    local -a inPkg=("$@")
+    local -a arch=()
+    local -a aur=()
 
-# Download Zinit, if it's not there yet
-if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-fi
+    for pkg in "${inPkg[@]}"; do
+        if pacman -Si "${pkg}" &>/dev/null ; then
+            arch+=("${pkg}")
+        else
+            aur+=("${pkg}")
+        fi
+    done
 
-# Source/Load zinit
-source "${ZINIT_HOME}/zinit.zsh"
+    if [[ ${#arch[@]} -gt 0 ]]; then
+        sudo pacman -S "${arch[@]}"
+    fi
 
-# Add in Powerlevel10k
-zinit ice depth=1; zinit light romkatv/powerlevel10k
+    if [[ ${#aur[@]} -gt 0 ]]; then
+        ${aurhelper} -S "${aur[@]}"
+    fi
+}
 
-# Add in zsh plugins
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
-zinit light Aloxaf/fzf-tab
-
-# Source the archlinux plugin manually
-source ~/.zsh/plugins/archlinux/archlinux.plugin.zsh
-
-# Add in snippets
-zinit snippet OMZP::git
-zinit snippet OMZP::sudo
-zinit snippet OMZP::aws
-zinit snippet OMZP::kubectl
-zinit snippet OMZP::kubectx
-zinit snippet OMZP::command-not-found
-
-# Load completions
-autoload -Uz compinit && compinit
-
-zinit cdreplay -q
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# Keybindings
-bindkey -e
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
-bindkey '^[w' kill-region
-
-# Keybindings for Home and End keys
-bindkey "^[[H" beginning-of-line  # Home key
-bindkey "^[[F" end-of-line        # End key
-bindkey "^[[1~" beginning-of-line # Home key on some keyboards
-bindkey "^[[4~" end-of-line       # End key on some keyboards
-
-# History
-HISTSIZE=5000
-HISTFILE=~/.zsh_history
-SAVEHIST=$HISTSIZE
-HISTDUP=erase
-setopt appendhistory
-setopt sharehistory
-setopt hist_ignore_space
-setopt hist_ignore_all_dups
-setopt hist_save_no_dups
-setopt hist_ignore_dups
-setopt hist_find_no_dups
-
-# Completion styling
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-
-# Aliases
-alias ls='ls --color'
+# Helpful aliases
 alias  c='clear' # clear terminal
 alias  l='eza -lh  --icons=auto' # long list
 alias ls='eza -1   --icons=auto' # short list
@@ -90,17 +69,18 @@ alias up='$aurhelper -Syu' # update system/package/aur
 alias pl='$aurhelper -Qs' # list installed package
 alias pa='$aurhelper -Ss' # list availabe package
 alias pc='$aurhelper -Sc' # remove unused cache
-alias po='$aurhelper -Qtdq | $aurhelper -Rns -'
-alias vc='code'
+alias po='$aurhelper -Qtdq | $aurhelper -Rns -' # remove unused packages, also try > $aurhelper -Qqd | $aurhelper -Rsu --print -
+alias vc='code' # gui code editor
 
 # Handy change dir shortcuts
 alias ..='cd ..'
 alias ...='cd ../..'
+alias .3='cd ../../..'
+alias .4='cd ../../../..'
+alias .5='cd ../../../../..'
 
 # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
 alias mkdir='mkdir -p'
 
-# Shell integrations
-eval "$(fzf --zsh)"
-export PATH="~/.local/bin:$PATH"
-export PATH="$PATH:/home/evrenos/.cargo/bin"
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
