@@ -8,17 +8,18 @@ aria2
 xdg-user-dirs
 qbittorrent
 telegram-desktop
-gthumb
+viewnior
 proxychains-ng
-foot
 github-cli
 neovim
+wlsunset
+inotify-tools
 
 # --------------------------------------------------- // AUR Packages
 spotube-bin
 flatpak
 nitch
-brave-nightly-bin
+brave-beta-bin
 ttf-maple
 ttf-twemoji
 signal-desktop
