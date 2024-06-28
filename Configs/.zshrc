@@ -7,7 +7,7 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 source "${ZINIT_HOME}/zinit.zsh"
 
 # Load powerlevel10k theme
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+# source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 
 # Function to load plugins
 load_plugins() {
@@ -20,6 +20,8 @@ load_plugins() {
   zinit snippet OMZ::plugins/sudo/sudo.plugin.zsh
   zinit light zsh-users/zsh-autosuggestions
   zinit light zdharma-continuum/fast-syntax-highlighting
+  zinit light chrissicool/zsh-256color
+  zinit light Aloxaf/fzf-tab
 
   # Lazy-load oh-my-zsh
   zinit snippet OMZ::lib/completion.zsh
@@ -85,6 +87,7 @@ alias mkdir='mkdir -p'
 
 # Add local bin to PATH
 export PATH=$PATH:~/.local/bin
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # Load plugins after Powerlevel10k instant prompt
 load_plugins
